@@ -7,4 +7,5 @@ struct Config
 	int simulationWidth;
 	int simulationHeight;
 	int quadSize;
+	bool randomWorldCreation;
 };

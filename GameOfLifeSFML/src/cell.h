@@ -4,12 +4,6 @@
 
 #include "definitions.h"
 
-enum CellState
-{
-	DEAD,
-	ALIVE
-};
-
 class Cell
 {
 private:
@@ -29,10 +23,10 @@ public:
 
 	void setPosition(int x, int y);
 	void setRandomState();
+	/* setNextState() together with updateState() should be used preferably instead of setState() directly
+		as it could happen that when you're in a rendering loop not all cells will be drawn correctly. */
 	void setNextState(CellState nextState);
-#if DEBUG
 	void setState(CellState state);
-#endif
 
 	bool isAlive() const;
 	void updateState();

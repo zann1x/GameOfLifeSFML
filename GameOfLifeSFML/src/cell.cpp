@@ -42,12 +42,10 @@ void Cell::setNextState(CellState nextState)
 	m_nextState = nextState;
 }
 
-#if DEBUG
 void Cell::setState(CellState state)
 {
 	m_state = state;
 }
-#endif
 
 bool Cell::isAlive() const
 {

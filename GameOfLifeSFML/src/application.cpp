@@ -3,7 +3,9 @@
 Application::Application(const Config& config)
 	: m_window(sf::VideoMode(config.windowWidth, config.windowHeight), "Game of Life"),
 	  m_config(config),
-	  m_board(config)
+	  m_board(config),
+	  m_state(State::CREATION),
+	  m_state_changed(true)
 {
 	Cell cell;
 	for (int x = 0; x < m_config.simulationWidth; x++)
@@ -11,18 +13,19 @@ Application::Application(const Config& config)
 		for (int y = 0; y < m_config.simulationHeight; y++)
 		{
 			cell.setPosition(x, y);
-#if DEBUG
-			cell.setState(CellState::DEAD);
-#else
-			cell.setRandomState();
-#endif
+
+			if (config.randomWorldCreation == true)
+				cell.setRandomState();
+			else
+				cell.setState(CellState::DEAD);
+
 			m_cells.push_back(cell);
 			m_board.updateQuadOf(cell);
 		}
 	}
 
 #if DEBUG
-	// Manual setup of the glider for testing purposes
+	// Manual setup of a glider for testing purposes
 	Cell& c1 = getCell(0, 1);
 	c1.setState(CellState::ALIVE);
 	m_board.updateQuadOf(c1);
@@ -59,14 +62,59 @@ void Application::run()
 	{
 		m_window.clear(sf::Color::Blue);
 
-		updateWorld();
-		m_board.draw(m_window);
+		switch (m_state)
+		{
+		case State::CREATION:
+			if (m_state_changed)
+			{
+				m_state_changed = false;
+				m_window.setTitle(m_title_creation);
+			}
 
+			getMouseInput();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			{
+				m_state = State::SIMULATION;
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
+			{
+				initWorld();
+			}
+			break;
+		case State::SIMULATION:
+			if (m_state_changed)
+			{
+				m_state_changed = false;
+				m_window.setTitle(m_title_simulation);
+			}
+
+			updateWorld();
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				m_state = State::CREATION;
+			}
+			break;
+		}
+
+		m_board.draw(m_window);
 		m_window.display();
 
 		handleEvents();
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	}
+}
+
+void Application::initWorld()
+{
+	for (int x = 0; x < m_config.simulationWidth; x++)
+	{
+		for (int y = 0; y < m_config.simulationHeight; y++)
+		{
+			Cell& cell = getCell(x, y);
+			cell.setState(CellState::DEAD);
+			m_board.updateQuadOf(cell);
+		}
 	}
 }
 
@@ -81,6 +129,41 @@ void Application::handleEvents()
 		case sf::Event::Closed:
 			m_window.close();
 			break;
+		}
+	}
+}
+
+void Application::getMouseInput()
+{
+	if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
+		return;
+
+	sf::Vector2i mousePositionInWindow = sf::Mouse::getPosition(m_window);
+	if (mousePositionInWindow.x < 0 || mousePositionInWindow.x > m_window.getSize().x ||
+		mousePositionInWindow.y < 0 || mousePositionInWindow.y > m_window.getSize().y)
+	{
+		return;
+	}
+
+	int mouseXPositionInQuad = std::ceil(mousePositionInWindow.x / m_config.quadSize);
+	int mouseYPositionInQuad = std::ceil(mousePositionInWindow.y / m_config.quadSize);
+
+	Cell& cell = getCell(mouseXPositionInQuad, mouseYPositionInQuad);
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		if (!cell.isAlive())
+		{
+			cell.setState(CellState::ALIVE);
+			m_board.updateQuadOf(cell);
+		}
+	}
+	else if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+	{
+		if (cell.isAlive())
+		{
+			cell.setState(CellState::DEAD);
+			m_board.updateQuadOf(cell);
 		}
 	}
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <cmath>
 
 #include "definitions.h"
 
@@ -18,6 +19,12 @@ private:
 
 	const Config m_config;
 	Board m_board;
+	State m_state;
+
+	bool m_state_changed;
+	
+	const std::string m_title_creation = "Game of Life - Creation mode";
+	const std::string m_title_simulation = "Game of Life";
 
 	std::vector<Cell> m_cells;
 
@@ -26,7 +33,10 @@ public:
 
 	void run();
 private:
+	void initWorld();
+
 	void handleEvents();
+	void getMouseInput();
 
 	int getCellIndex(int x, int y) const;
 	int getCellIndex(const Cell& cell) const;

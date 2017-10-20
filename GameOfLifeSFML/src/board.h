@@ -3,6 +3,8 @@
 #include <SFML\Graphics.hpp>
 #include <vector>
 
+#include "definitions.h"
+
 #include "config.h"
 #include "cell.h"
 
@@ -16,6 +18,8 @@ public:
 	Board(const Config& config);
 
 	int getQuadIndex(int x, int y) const;
+	int getQuadIndex(sf::RectangleShape& quad) const;
+	sf::RectangleShape& getQuad(int x, int y);
 
 	void updateQuadOf(Cell& cell);
 	void draw(sf::RenderWindow& window);

@@ -30,6 +30,11 @@ int main()
 	config.simulationWidth = config.windowWidth / config.quadSize;
 	config.simulationHeight = config.windowHeight / config.quadSize;
 
+	std::cout << "\nCreate random world? [Y/N]" << std::endl;
+	std::cin >> option;
+	option = std::toupper(option);
+	config.randomWorldCreation = (option == 'Y') ? true : false;
+
 	std::cout << "Starting game..." << std::endl;
 	Application app(config);
 	std::cout << "running..." << std::endl;
