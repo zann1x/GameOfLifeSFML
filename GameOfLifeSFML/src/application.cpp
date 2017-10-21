@@ -7,6 +7,11 @@ Application::Application(const Config& config)
 	  m_state(State::CREATION),
 	  m_state_changed(true)
 {
+	if (m_config.randomWorldCreation)
+	{
+		m_state = State::SIMULATION;
+	}
+
 	Cell cell;
 	for (int x = 0; x < m_config.simulationWidth; x++)
 	{
@@ -51,12 +56,13 @@ Application::Application(const Config& config)
 void Application::run()
 {
 	m_window.clear(sf::Color::Blue);
-
 	m_board.draw(m_window);
 	m_window.display();
 	handleEvents();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+	m_window.requestFocus();
 
 	while (m_window.isOpen())
 	{
@@ -75,6 +81,7 @@ void Application::run()
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 			{
 				m_state = State::SIMULATION;
+				m_state_changed = true;
 			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
 			{
@@ -92,6 +99,7 @@ void Application::run()
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			{
 				m_state = State::CREATION;
+				m_state_changed = true;
 			}
 			break;
 		}
