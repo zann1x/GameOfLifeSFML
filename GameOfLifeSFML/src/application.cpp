@@ -28,29 +28,6 @@ Application::Application(const Config& config)
 			m_board.updateQuadOf(cell);
 		}
 	}
-
-#if DEBUG
-	// Manual setup of a glider for testing purposes
-	Cell& c1 = getCell(0, 1);
-	c1.setState(CellState::ALIVE);
-	m_board.updateQuadOf(c1);
-
-	Cell& c2 = getCell(1, 2);
-	c2.setState(CellState::ALIVE);
-	m_board.updateQuadOf(c2);
-
-	Cell& c3 = getCell(2, 0);
-	c3.setState(CellState::ALIVE);
-	m_board.updateQuadOf(c3);
-
-	Cell& c4 = getCell(2, 1);
-	c4.setState(CellState::ALIVE);
-	m_board.updateQuadOf(c4);
-
-	Cell& c5 = getCell(2, 2);
-	c5.setState(CellState::ALIVE);
-	m_board.updateQuadOf(c5);
-#endif
 }
 
 void Application::run()
