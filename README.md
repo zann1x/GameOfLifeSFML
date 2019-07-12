@@ -7,4 +7,4 @@ Key reference
 * Space: Continue the simulation.
 * C: Clear the screen and initialize the world again.
 
-![image](https://i.gyazo.com/8631e2d4379ab149662970ebdf17ee6a.gif)
+![image](Screenshots/Game.gif)
